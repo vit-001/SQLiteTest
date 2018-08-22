@@ -10,6 +10,7 @@ class GymBoom:
 
     def _init_tables(self):
         self.exercises = self.parse_table('exercises')
+        # print(self.exercises)
         self.exercises_measures = self.parse_table('exercises_measures')
 
         self.groups=self.parse_table('groups')
@@ -133,18 +134,55 @@ class Report:
         self.gb=gb
 
     def proceed(self):
+        self.convert_sets_measures()
+        for id_wo, wo in self.gb.workouts.items():
+            self.proceed_day(id_wo, wo)
 
-        for id_wo, wo in gb.workouts.items():
-            print(id_wo, wo)
-            date = datetime.fromtimestamp(float(wo['date']) / 1000).date()
-            name = wo['name']
-            print(date, name)
-            for id_wo_ex, wo_ex in gb.workouts_exercises.items():
-                if wo_ex['id_wo']==id_wo:
-                    print(id_wo_ex, wo_ex)
+    def convert_sets_measures(self):
+        self.sets_measures=dict()
+        for id, item in self.gb.sets_measures.items():
+            # print(id,item)
+            id_se=item['id_se']
+            value=item['value']
+            name=self.gb.measures[item['id_me']]['name']
+            print(id_se,name,value)
+
+            measure={'name':name, 'value':value}
+
+            temp=self.sets_measures.get(id_se,[])
+            temp.append(measure)
+            self.sets_measures[id_se]=temp
+
+        for id, item in self.sets_measures.items():
+            print(id, item)
 
 
+    def proceed_day(self, id_workout, workout):
+        date = datetime.fromtimestamp(float(workout['date']) / 1000).date()
+        name = workout['name']
+        print('----------------------')
+        print(date, name)
 
+        day_exercises=dict()
+        for id_wo_ex, wo_ex in self.gb.workouts_exercises.items():
+            if wo_ex['id_wo'] == id_workout:
+                number=wo_ex['number']
+                exercize=self.gb.exercises[wo_ex['id_ex']]
+                exercize_data={'ex':exercize, 'id':id_wo_ex}
+                day_exercises[number]=exercize_data
+        for number in sorted(day_exercises):
+            # print(day_exercises[number])
+            exercize=day_exercises[number]['ex']
+            id_wo_ex = day_exercises[number]['id']
+
+            self.proceed_exercise(id_wo_ex, exercize)
+
+    def proceed_exercise(self, id_wo_exercise, exercise):
+        print(exercise, id_wo_exercise)
+        for attempt_number, attempt in self.gb.sets.items():
+            if attempt['id_wo_ex']==id_wo_exercise:
+                print(attempt_number,attempt)
+                print(self.sets_measures[attempt_number])
 
 
 if __name__ == "__main__":
@@ -152,11 +190,11 @@ if __name__ == "__main__":
     conn = sqlite3.connect('base/1.gb')
     cursor = conn.cursor()
 
-    gb=GymBoom(cursor)
+    gb1=GymBoom(cursor)
 
     conn.close()
 
-    r=Report(gb)
+    r=Report(gb1)
 
     r.proceed()
 
