@@ -128,6 +128,23 @@ class Workouts:
             # print(date, name, workout)
             self.table[str(date)] = dict(name=name, workout=workout)
 
+class Report:
+    def __init__(self, gb:GymBoom):
+        self.gb=gb
+
+    def proceed(self):
+
+        for id_wo, wo in gb.workouts.items():
+            print(id_wo, wo)
+            date = datetime.fromtimestamp(float(wo['date']) / 1000).date()
+            name = wo['name']
+            print(date, name)
+            for id_wo_ex, wo_ex in gb.workouts_exercises.items():
+                if wo_ex['id_wo']==id_wo:
+                    print(id_wo_ex, wo_ex)
+
+
+
 
 
 if __name__ == "__main__":
@@ -139,10 +156,16 @@ if __name__ == "__main__":
 
     conn.close()
 
-    wo=Workouts(gb)
+    r=Report(gb)
 
-    for date, item in wo.table.items():
-        print(date, item)
-        pass
+    r.proceed()
+
+
+
+    # wo=Workouts(gb)
+    #
+    # for date, item in wo.table.items():
+    #     print(date, item)
+    #     pass
 
 
