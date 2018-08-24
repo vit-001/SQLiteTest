@@ -2,6 +2,9 @@ class Exportable:
     def export(self):
         print('Not implemented')
 
+    def export_csv(self, fd):
+        print('Not implemented')
+
 class Set(Exportable):
     def __init__(self):
         self.weight=0.0
@@ -48,6 +51,30 @@ class Exercise(Exportable):
         if t:
             print(t)
 
+    def export_csv(self, fd):
+        print('  ',self.name, file=fd)
+        for set in self.sets:
+            # set.export()
+            print(('%10.1f;' % set.weight).replace('.',','), end=' ', file=fd)
+        print(file=fd)
+        for set in self.sets:
+            # set.export()
+            print('%10d;' % set.repeats, end=' ', file=fd)
+        print(file=fd)
+
+        t=''
+        for set in self.sets:
+            if set.comment:
+                t=t+set.comment
+        if t:
+            print(t, file=fd)
+
+        t=''
+        for set in self.sets:
+            if set.anydata:
+                t=t+set.anydata
+        if t:
+            print(t, file=fd)
 
 class Workout(Exportable):
     def __init__(self, date, name):
@@ -66,6 +93,11 @@ class Workout(Exportable):
         for ex in self.excercises:
             ex.export()
 
+    def export_csv(self, fd):
+        print(self.date,';', self.name, file=fd)
+        for ex in self.excercises:
+            ex.export_csv(fd)
+
 class Base(Exportable):
     def __init__(self):
         self.days=[]
@@ -79,3 +111,7 @@ class Base(Exportable):
     def export(self):
         for wo in self.days:
             wo.export()
+
+    def export_csv(self, fd):
+        for wo in self.days:
+            wo.export_csv(fd)

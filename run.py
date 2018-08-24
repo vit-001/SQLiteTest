@@ -11,9 +11,8 @@ if __name__ == "__main__":
 
     DBConvert(gb, base)
 
-
-
     base.export()
 
-
+    with open('out.csv', 'w') as fd:
+        base.export_csv(fd)
 
