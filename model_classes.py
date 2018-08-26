@@ -5,7 +5,39 @@ class Exportable:
     def export_csv(self, fd):
         print('Not implemented')
 
-class Set(Exportable):
+class Exercises:
+    def __init__(self):
+        self.base=dict()
+
+    def add(self, name:str, value:float, repeat:int):
+        old=self.base.get(name,{'max':0.0, 'repeat':1})
+        if value<old['max']:
+            return
+
+        if value>old['max']:
+            old['max']=value
+            old['repeat']=repeat
+        else:
+            if repeat>old['repeat']:
+                old['repeat']=repeat
+            else:
+                return
+        self.base[name] = old
+
+
+    def output(self):
+        for name,data in self.base.items():
+            m=data['max']
+            k=data['repeat']
+            print(name, m,'x',k, '%1.1f' % (m*(36/(37-k))))
+
+class Statistic:
+    max_repeat=17
+    exercises=Exercises()
+    def stat(self):
+        print('Not implemented')
+
+class Set(Exportable,Statistic):
     def __init__(self):
         self.weight=0.0
         self.repeats=0
@@ -15,7 +47,9 @@ class Set(Exportable):
     def export(self):
         print('    ',self.weight,'X', self.repeats, self.anydata, self.comment)
 
-class Exercise(Exportable):
+
+
+class Exercise(Exportable,Statistic):
     def __init__(self, name):
         self.name=name
         self.sets=[]
@@ -55,7 +89,7 @@ class Exercise(Exportable):
         print('  ',self.name, file=fd)
         for set in self.sets:
             # set.export()
-            print(('%10.1f;' % set.weight).replace('.',','), end=' ', file=fd)
+            print(('%10.1f;' % set.weight).replace('.','.'), end=' ', file=fd)
         print(file=fd)
         for set in self.sets:
             # set.export()
@@ -76,7 +110,11 @@ class Exercise(Exportable):
         if t:
             print(t, file=fd)
 
-class Workout(Exportable):
+    def stat(self):
+        for item in self.sets:
+            Statistic.exercises.add(self.name,item.weight, item.repeats)
+
+class Workout(Exportable, Statistic):
     def __init__(self, date, name):
         self.date=date
         self.name=name
@@ -98,7 +136,12 @@ class Workout(Exportable):
         for ex in self.excercises:
             ex.export_csv(fd)
 
-class Base(Exportable):
+    def stat(self):
+        # print(self.date, self.name)
+        for ex in self.excercises:
+            ex.stat()
+
+class Base(Exportable, Statistic):
     def __init__(self):
         self.days=[]
         self.current_workout=None
@@ -115,3 +158,8 @@ class Base(Exportable):
     def export_csv(self, fd):
         for wo in self.days:
             wo.export_csv(fd)
+
+    def stat(self):
+        for wo in self.days:
+            wo.stat()
+        Statistic.exercises.output()
