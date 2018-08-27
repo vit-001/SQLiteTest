@@ -86,15 +86,28 @@ class Exercise(Exportable,Statistic):
             print(t)
 
     def export_csv(self, fd):
-        print('  ',self.name, file=fd)
+        table_width=Statistic.max_repeat+3
+        first_line=['' for i in range(table_width)]
+        second_line = ['' for i in range(table_width)]
+
+        first_line[2]=self.name
+
+
+        # print('  ',self.name, file=fd)
+
+        i=3
+
         for set in self.sets:
             # set.export()
-            print(('%10.1f;' % set.weight).replace('.','.'), end=' ', file=fd)
-        print(file=fd)
-        for set in self.sets:
+            # print(('%10.1f;' % set.weight).replace('.','.'), end=' ', file=fd)
+            first_line[i]=('%10.1f' % set.weight).replace('.','.')
+            second_line[i]='%10d' % set.repeats
+            i=i+1
+        # print(file=fd)
+        # for set in self.sets:
             # set.export()
-            print('%10d;' % set.repeats, end=' ', file=fd)
-        print(file=fd)
+            # print('%10d;' % set.repeats, end=' ', file=fd)
+        # print(file=fd)
 
         t=''
         for set in self.sets:
@@ -109,6 +122,17 @@ class Exercise(Exportable,Statistic):
                 t=t+set.anydata
         if t:
             print(t, file=fd)
+
+
+        for item in first_line:
+            print(item,';', end='', file=fd)
+        print(file=fd)
+
+        for item in second_line:
+            print(item,';', end='', file=fd)
+        print(file=fd)
+
+
 
     def stat(self):
         for item in self.sets:
