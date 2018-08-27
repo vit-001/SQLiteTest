@@ -1,3 +1,5 @@
+from local_setting import LocalSetting, fft
+
 class Exportable:
     def export(self):
         print('Not implemented')
@@ -30,6 +32,12 @@ class Exercises:
             m=data['max']
             k=data['repeat']
             print(name, m,'x',k, '%1.1f' % (m*(36/(37-k))))
+
+    def get_1PM(self, name:str)->float:
+        ex=self.base.get(name,{'max':0.0, 'repeat':1})
+        m = ex['max']
+        k = ex['repeat']
+        return (m*(36/(37-k)))
 
 class Statistic:
     max_repeat=17
@@ -89,49 +97,46 @@ class Exercise(Exportable,Statistic):
         table_width=Statistic.max_repeat+3
         first_line=['' for i in range(table_width)]
         second_line = ['' for i in range(table_width)]
+        third_line = ['' for i in range(table_width)]
+        use_third_line=False
 
         first_line[2]=self.name
-
-
-        # print('  ',self.name, file=fd)
-
         i=3
 
         for set in self.sets:
-            # set.export()
-            # print(('%10.1f;' % set.weight).replace('.','.'), end=' ', file=fd)
-            first_line[i]=('%10.1f' % set.weight).replace('.','.')
+            first_line[i]=fft(set.weight)
             second_line[i]='%10d' % set.repeats
-            i=i+1
-        # print(file=fd)
-        # for set in self.sets:
-            # set.export()
-            # print('%10d;' % set.repeats, end=' ', file=fd)
-        # print(file=fd)
 
-        t=''
-        for set in self.sets:
-            if set.comment:
-                t=t+set.comment
-        if t:
-            print(t, file=fd)
-
-        t=''
-        for set in self.sets:
             if set.anydata:
-                t=t+set.anydata
-        if t:
-            print(t, file=fd)
+                third_line[i]=set.anydata
+                use_third_line=True
+            if set.comment:
+                third_line[i]=third_line[i]+set.comment
+                use_third_line=True
 
+            i=i+1
 
         for item in first_line:
-            print(item,';', end='', file=fd)
-        print(file=fd)
+            print(item, end=';', file=fd)
+
+        print('V=;"=СУММПРОИЗВ(RC[-18]:RC[-2];R[1]C[-18]:R[1]C[-2])"', end=';', file=fd)
+        print('Ио=;"=RC[2]/R[1]C[2]"', end=';', file=fd)
+        print('ср вес=;"=RC[-4]/R[1]C[-4]"', end=';', file=fd)
+        print('КО=;"=RC[-4]*R[1]C[-6]"', file=fd)
+
+
+        # , fft(Statistic.exercises.get_1PM(self.name)), file=fd)
 
         for item in second_line:
-            print(item,';', end='', file=fd)
-        print(file=fd)
+            print(item, end=';', file=fd)
 
+        print('КПШ=;"=СУММ(RC[-18]:RC[-2])";;', end=';', file=fd)
+        print('1ПМ=;', fft(Statistic.exercises.get_1PM(self.name)), file=fd)
+
+        if use_third_line:
+            for item in third_line:
+                print(item, end=';', file=fd)
+            print(file=fd)
 
 
     def stat(self):
