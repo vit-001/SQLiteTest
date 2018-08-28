@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from gymboomreader import GymBoomReader
-from model_classes import Base,Workout,Exercise,Set
+from base import Set, Exercise, Workout, Base
+
 
 class DBConvert:
     def __init__(self, gb: GymBoomReader, base: Base):
