@@ -1,4 +1,4 @@
-from base import Base
+from gb_base import Base
 from local_setting import fft
 
 
@@ -103,3 +103,32 @@ class CreateTable:
 
                 else:
                     print(file=fd)
+
+class ExportXLS:
+    def __init__(self, base:Base):
+        self.base=base
+
+    def proceed_to_xls(self, fd):
+        pass
+
+if __name__ == "__main__":
+    from openpyxl import Workbook
+
+    wb = Workbook()
+
+    # grab the active worksheet
+    ws = wb.active
+
+    # Data can be assigned directly to cells
+    ws['A1'] = 42
+
+    # Rows can also be appended
+    ws.append([1, 2, 3])
+
+    # Python types will automatically be converted
+    import datetime
+
+    ws['A2'] = datetime.datetime.now()
+
+    # Save the file
+    wb.save("sample.xlsx")
