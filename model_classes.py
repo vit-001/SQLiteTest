@@ -1,3 +1,6 @@
+from openpyxl import Workbook
+from openpyxl.styles import Alignment
+
 from gb_base import Base
 from local_setting import fft
 
@@ -108,27 +111,122 @@ class ExportXLS:
     def __init__(self, base:Base):
         self.base=base
 
-    def proceed_to_xls(self, fd):
-        pass
+    def proceed_to_xls(self, fname):
+        wb = Workbook()
+        ws = wb.active
+
+        c_row=0
+
+        for workout in self.base.days:
+            c_row=c_row+1
+            ws.cell(c_row, 1).value = workout.date
+            ws.cell(c_row, 2).value = workout.name
+
+            for ex in workout.excercises:
+                c_row = c_row + 1
+                use_third_line = False
+
+                ws.cell(c_row, 3).value = ex.name
+
+                i = 4
+                for set in ex.sets:
+                    ws.cell(c_row, i).value = set.weight
+                    ws.cell(c_row+1, i).value = set.repeats
+
+                    t=''
+                    if set.anydata:
+                        t=t+set.anydata
+                        use_third_line = True
+                    if set.comment:
+                        t = t + set.comment
+                        use_third_line = True
+
+                    ws.cell(c_row + 2, i).value = t
+
+                    i = i + 1
+
+                if ex.sets:
+
+                    ws.merge_cells(f'C{c_row}:C{c_row+1}')
+
+                    ws.cell(c_row, 21).value = 'V'
+                    ws.cell(c_row+1, 21).value = f'=SUMPRODUCT(D{c_row}:T{c_row},D{c_row+1}:T{c_row+1})'
+
+                    ws.cell(c_row, 22).value = 'КПШ'
+                    ws.cell(c_row+1, 22).value = f'=SUM(D{c_row+1}:T{c_row+1})'
+
+                    ws.cell(c_row, 23).value = 'Ио'
+                    ws.cell(c_row+1, 23).value = f'=X{c_row+1}/Y{c_row+1}'
+                    ws.cell(c_row + 1, 23).number_format = '0.0%'
+
+                    ws.cell(c_row, 24).value = 'ср вес'
+                    ws.cell(c_row+1, 24).value = f'=U{c_row+1}/V{c_row+1}'
+                    ws.cell(c_row + 1, 24).number_format = '0.0'
+
+                    ws.cell(c_row, 25).value = '1ПМ'
+                    ws.cell(c_row+1, 25).value = Statistic.exercises.get_1PM(ex.name)
+                    ws.cell(c_row+1, 25).number_format = '0.0'
+
+                    ws.cell(c_row, 26).value = 'КО'
+                    ws.cell(c_row+1, 26).value = f'=W{c_row+1}*V{c_row+1}'
+                    ws.cell(c_row+1, 26).number_format = '0.0'
+
+                    c_row = c_row + 1
+
+                    if use_third_line:
+                        c_row = c_row + 1
+
+        self.format_exersises_sheet(ws,c_row)
+        wb.save(fname)
+
+    def format_exersises_sheet(self, ws, last_row):
+
+        align_center = Alignment(horizontal='center',
+                                 vertical='top',
+                                 text_rotation=0,
+                                 wrap_text=False,
+                                 shrink_to_fit=False,
+                                 indent=0)
+
+        align_left_wrap = Alignment(horizontal='left',
+                                 vertical='top',
+                                 text_rotation=0,
+                                 wrap_text=True,
+                                 shrink_to_fit=False,
+                                 indent=0)
+
+
+        for col in ws.iter_cols(min_col=21, max_col=26, max_row=last_row):
+            for cell in col:
+                cell.alignment=align_center
+
+        for cell in ws['C']:
+            cell.alignment = align_left_wrap
+
+        ws.column_dimensions['A'].width = 12
+        ws.column_dimensions['B'].width = 1
+        ws.column_dimensions['C'].width = 30
 
 if __name__ == "__main__":
-    from openpyxl import Workbook
 
-    wb = Workbook()
+
+    wb1 = Workbook()
 
     # grab the active worksheet
-    ws = wb.active
+    ws1 = wb1.active
 
     # Data can be assigned directly to cells
-    ws['A1'] = 42
+    # ws['A1'] = 42
 
     # Rows can also be appended
-    ws.append([1, 2, 3])
+    ws1.append([1, 2, 3])
+
+    ws1['D1']='=SUM(A1:C1)'
 
     # Python types will automatically be converted
-    import datetime
-
-    ws['A2'] = datetime.datetime.now()
+    # import datetime
+    #
+    # ws['A2'] = datetime.datetime.now()
 
     # Save the file
-    wb.save("sample.xlsx")
+    wb1.save("sample.xlsx")

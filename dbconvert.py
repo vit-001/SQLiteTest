@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from gymboomreader import GymBoomReader
-from base import Set, Exercise, Workout, Base
+from gb_base import Set, Exercise, Workout, Base
 
 
 class DBConvert:
