@@ -1,5 +1,5 @@
 from openpyxl import Workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 
 from gb_base import Base
 from local_setting import fft
@@ -8,6 +8,165 @@ from local_setting import fft
 class Exercises:
     def __init__(self):
         self.base = dict()
+        self.ex_base = {"Становая тяга с плинтов": {"pm": 220.0, "k": 1.0, "base": True},
+                        "Жим штанги лежа на горизонтальной скамье": {"pm": 137.5, "k": 1.0, "base": True},
+                        "Жим гантелей на скамье с наклоном вверх": {"pm": 39.6, "k": 2.0, "base": True},
+                        "Жим штанги с груди сидя в смите": {"pm": 75.48, "k": 1.0, "base": True},
+                        "Полуприсед со штангой": {"pm": 226.29, "k": 1.0, "base": True},
+                        "Приседания со штангой на плечах": {"pm": 210.0, "k": 1.0, "base": True},
+                        "Становая тяга": {"pm": 212.5, "k": 1.0, "base": True},
+                        "Жим лежа в слинге": {"pm": 158.82, "k": 1.0, "base": True},
+                        "Тяга штанги в наклоне": {"pm": 133.33, "k": 1.0, "base": False},
+                        "Тяга гантели одной рукой в наклоне": {"pm": 61.88, "k": 2.0, "base": False},
+                        "Французский жим лежа": {"pm": 60.0, "k": 1.0, "base": False},
+                        "Становая тяга из ямы": {"pm": 200.0, "k": 1.0, "base": True},
+                        "Вертикальная тяга верхнего блока к груди широким хватом": {"pm": 121.33, "k": 1.0,
+                                                                                    "base": False},
+                        "Подъем гантелей на бицепс сидя": {"pm": 19.58, "k": 2.0, "base": False},
+                        "Горизонтальная тяга узким хватом в блочном тренажере": {"pm": 109.33, "k": 1.0, "base": False},
+                        "Разгибание рук с гантелью из-за головы сидя": {"pm": 55.58, "k": 1.0, "base": False},
+                        "Французский жим в блочном тренажере": {"pm": 90.0, "k": 1.0, "base": False},
+                        "Подъем штанги на бицепс стоя": {"pm": 66.67, "k": 1.0, "base": False},
+                        "Гиперэкстензия": {"pm": 57.6, "k": 1.0, "base": False},
+                        "Бабочка": {"pm": 139.09, "k": 1.0, "base": False},
+                        "Разведение гантелей в стороны стоя": {"pm": 23.69, "k": 2.0, "base": False},
+                        "Жим книзу в блочном тренажере двумя руками": {"pm": 109.33, "k": 1.0, "base": False},
+                        "Сгибание ног лежа на тренажере": {"pm": 104.73, "k": 1.0, "base": False},
+                        "Жим П-грифа": {"pm": 98.18, "k": 1.0, "base": True},
+                        "Жим штанги узким хватом лежа": {"pm": 95.62, "k": 1.0, "base": True},
+                        "Пресс в тренажере": {"pm": 146.88, "k": 1.0, "base": False},
+                        "Жим лежа с паузой": {"pm": 127.06, "k": 1.0, "base": True},
+                        "Отжимания от скамьи в упоре сзади": {"pm": 0.0, "k": 1.0, "base": False},
+                        "Приседания на скамью": {"pm": 164.57, "k": 1.0, "base": True},
+                        "Жим гантелей сидя": {"pm": 36.93, "k": 2.0, "base": True},
+                        "Жим штанги на скамье с наклоном вверх": {"pm": 120.0, "k": 1.0, "base": True},
+                        "Жим гантелей лежа на горизонтальной скамье": {"pm": 44.83, "k": 2.0, "base": True},
+                        "Жим ногами в тренажере": {"pm": 394.84, "k": 0.7, "base": True},
+                        "Верхний хаммер": {"pm": 98.18, "k": 1.0, "base": False},
+                        "Разгибания ног на тренажере": {"pm": 153.33, "k": 1.0, "base": False},
+                        "Наклоны со штангой на плечах": {"pm": 173.79, "k": 1.0, "base": False},
+                        "Махи сидя": {"pm": 16.88, "k": 1.0, "base": False},
+                        "Нижний хаммер": {"pm": 66.67, "k": 1.0, "base": False},
+                        "Подъем на бицепс в блочном тренажере стоя": {"pm": 86.67, "k": 1.0, "base": False},
+                        "Присед с паузой внизу": {"pm": 152.73, "k": 1.0, "base": True},
+                        "Сгибания ног сидя на тренажере": {"pm": 113.33, "k": 1.0, "base": False},
+                        "Разведение гантелей сидя": {"pm": 14.73, "k": 2.0, "base": False},
+                        "Жим с бруска": {"pm": 154.29, "k": 1.0, "base": True},
+                        "Подъем гантелей перед собой": {"pm": 18.0, "k": 2.0, "base": False},
+                        "Махи одной рукой поочередно": {"pm": 18.0, "k": 2.0, "base": False},
+                        "Молоток": {"pm": 39.17, "k": 2.0, "base": False},
+                        "Вертикальная тяга верхнего блока за голову широким хватом": {"pm": 78.67, "k": 1.0,
+                                                                                      "base": False},
+                        "Становая тяга с паузой ": {"pm": 174.86, "k": 1.0, "base": True},
+                        "Жим сидя в тренажере": {"pm": 161.38, "k": 1.0, "base": False},
+                        "Разведение гантелей на горизонтальной скамье": {"pm": 26.02, "k": 2.0, "base": False},
+                        "Подьем гантелей перед собой сидя": {"pm": 12.96, "k": 2.0, "base": False},
+                        "Скручивание на скамье с наклоном вниз": {"pm": 21.18, "k": 1.0, "base": False},
+                        "Рычажная тяга": {"pm": 108.0, "k": 1.0, "base": False},
+                        "Вертикальная тяга верхнего блока к груди D-рукоятки": {"pm": 89.33, "k": 1.0, "base": False},
+                        "Подьем на бицепс на скамье скота": {"pm": 39.6, "k": 1.0, "base": False},
+                        "Бицепс в тренажере": {"pm": 86.4, "k": 1.0, "base": False},
+                        "Присед с двумя паузами": {"pm": 169.41, "k": 1.0, "base": True},
+                        "Горизонтальная тяга широким хватом в блочном тренажере": {"pm": 105.12, "k": 1.0,
+                                                                                   "base": False},
+                        "Сгибание рук на бицепс в кроссовере": {"pm": 51.55, "k": 1.0, "base": False},
+                        "Вертикальная тяга верхнего блока к груди обратным хватом": {"pm": 96.0, "k": 1.0,
+                                                                                     "base": False},
+                        "Отжимания на брусьях": {"pm": 27.24, "k": 1.0, "base": False},
+                        "Протяжка на блоке": {"pm": 90.67, "k": 1.0, "base": False},
+                        "Сведение в кроссовере через верхние блоки": {"pm": 76.24, "k": 1.0, "base": False},
+                        "Жим Арнольда": {"pm": 19.58, "k": 2.0, "base": False},
+                        "Отведение в кроссовере на среднюю дельту": {"pm": 26.67, "k": 1.0, "base": False},
+                        "Жим в смите под углом": {"pm": 58.06, "k": 1.0, "base": False},
+                        "Присед со штангой на груди": {"pm": 112.5, "k": 1.0, "base": True},
+                        "Жим штанги стоя": {"pm": 58.06, "k": 1.0, "base": True},
+                        "Жим штанги с груди сидя на опорной скамье": {"pm": 65.45, "k": 1.0, "base": True},
+                        "Французский жим гантелей лежа": {"pm": 19.58, "k": 2.0, "base": False},
+                        "Жим книзу одной рукой в блочном тренажере обратным хватом": {"pm": 36.0, "k": 2.0,
+                                                                                      "base": False},
+                        "Разведение ног на тренажере": {"pm": 192.71, "k": 1.0, "base": False},
+                        "Жим с цепями": {"pm": 112.5, "k": 1.0, "base": True}}
+
+        self.ex_base_old = [dict(name="Становая тяга с плинтов", pm=220.00, k=1.0, base=True),
+                            dict(name="Жим штанги лежа на горизонтальной скамье", pm=137.50, k=1.0, base=True),
+                            dict(name="Жим гантелей на скамье с наклоном вверх", pm=39.60, k=2.0, base=True),
+                            dict(name="Жим штанги с груди сидя в смите", pm=75.48, k=1.0, base=True),
+                            dict(name="Полуприсед со штангой", pm=226.29, k=1.0, base=True),
+                            dict(name="Приседания со штангой на плечах", pm=210.00, k=1.0, base=True),
+                            dict(name="Становая тяга", pm=212.50, k=1.0, base=True),
+                            dict(name="Жим лежа в слинге", pm=158.82, k=1.0, base=True),
+                            dict(name="Тяга штанги в наклоне", pm=133.33, k=1.0, base=False),
+                            dict(name="Тяга гантели одной рукой в наклоне", pm=61.88, k=2.0, base=False),
+                            dict(name="Французский жим лежа", pm=60.00, k=1.0, base=False),
+                            dict(name="Становая тяга из ямы", pm=200.00, k=1.0, base=True),
+                            dict(name="Вертикальная тяга верхнего блока к груди широким хватом", pm=121.33, k=1.0,
+                                 base=False),
+                            dict(name="Подъем гантелей на бицепс сидя", pm=19.58, k=2.0, base=False),
+                            dict(name="Горизонтальная тяга узким хватом в блочном тренажере", pm=109.33, k=1.0,
+                                 base=False),
+                            dict(name="Разгибание рук с гантелью из-за головы сидя", pm=55.58, k=1.0, base=False),
+                            dict(name="Французский жим в блочном тренажере", pm=90.00, k=1.0, base=False),
+                            dict(name="Подъем штанги на бицепс стоя", pm=66.67, k=1.0, base=False),
+                            dict(name="Гиперэкстензия", pm=57.60, k=1.0, base=False),
+                            dict(name="Бабочка", pm=139.09, k=1.0, base=False),
+                            dict(name="Разведение гантелей в стороны стоя", pm=23.69, k=2.0, base=False),
+                            dict(name="Жим книзу в блочном тренажере двумя руками", pm=109.33, k=1.0, base=False),
+                            dict(name="Сгибание ног лежа на тренажере", pm=104.73, k=1.0, base=False),
+                            dict(name="Жим П-грифа", pm=98.18, k=1.0, base=True),
+                            dict(name="Жим штанги узким хватом лежа", pm=95.62, k=1.0, base=True),
+                            dict(name="Пресс в тренажере", pm=146.88, k=1.0, base=False),
+                            dict(name="Жим лежа с паузой", pm=127.06, k=1.0, base=True),
+                            dict(name="Отжимания от скамьи в упоре сзади", pm=0.00, k=1.0, base=False),
+                            dict(name="Приседания на скамью", pm=164.57, k=1.0, base=True),
+                            dict(name="Жим гантелей сидя", pm=36.93, k=2.0, base=True),
+                            dict(name="Жим штанги на скамье с наклоном вверх", pm=120.00, k=1.0, base=True),
+                            dict(name="Жим гантелей лежа на горизонтальной скамье", pm=44.83, k=2.0, base=True),
+                            dict(name="Жим ногами в тренажере", pm=394.84, k=0.7, base=True),
+                            dict(name="Верхний хаммер", pm=98.18, k=1.0, base=False),
+                            dict(name="Разгибания ног на тренажере", pm=153.33, k=1.0, base=False),
+                            dict(name="Наклоны со штангой на плечах", pm=173.79, k=1.0, base=False),
+                            dict(name="Махи сидя", pm=16.88, k=1.0, base=False),
+                            dict(name="Нижний хаммер", pm=66.67, k=1.0, base=False),
+                            dict(name="Подъем на бицепс в блочном тренажере стоя", pm=86.67, k=1.0, base=False),
+                            dict(name="Присед с паузой внизу", pm=152.73, k=1.0, base=True),
+                            dict(name="Сгибания ног сидя на тренажере", pm=113.33, k=1.0, base=False),
+                            dict(name="Разведение гантелей сидя", pm=14.73, k=2.0, base=False),
+                            dict(name="Жим с бруска", pm=154.29, k=1.0, base=True),
+                            dict(name="Подъем гантелей перед собой", pm=18.00, k=2.0, base=False),
+                            dict(name="Махи одной рукой поочередно", pm=18.00, k=2.0, base=False),
+                            dict(name="Молоток", pm=39.17, k=2.0, base=False),
+                            dict(name="Вертикальная тяга верхнего блока за голову широким хватом", pm=78.67, k=1.0,
+                                 base=False),
+                            dict(name="Становая тяга с паузой ", pm=174.86, k=1.0, base=True),
+                            dict(name="Жим сидя в тренажере", pm=161.38, k=1.0, base=False),
+                            dict(name="Разведение гантелей на горизонтальной скамье", pm=26.02, k=2.0, base=False),
+                            dict(name="Подьем гантелей перед собой сидя", pm=12.96, k=2.0, base=False),
+                            dict(name="Скручивание на скамье с наклоном вниз", pm=21.18, k=1.0, base=False),
+                            dict(name="Рычажная тяга", pm=108.00, k=1.0, base=False),
+                            dict(name="Вертикальная тяга верхнего блока к груди D-рукоятки", pm=89.33, k=1.0,
+                                 base=False),
+                            dict(name="Подьем на бицепс на скамье скота", pm=39.60, k=1.0, base=False),
+                            dict(name="Бицепс в тренажере", pm=86.40, k=1.0, base=False),
+                            dict(name="Присед с двумя паузами", pm=169.41, k=1.0, base=True),
+                            dict(name="Горизонтальная тяга широким хватом в блочном тренажере", pm=105.12, k=1.0,
+                                 base=False),
+                            dict(name="Сгибание рук на бицепс в кроссовере", pm=51.55, k=1.0, base=False),
+                            dict(name="Вертикальная тяга верхнего блока к груди обратным хватом", pm=96.00, k=1.0,
+                                 base=False),
+                            dict(name="Отжимания на брусьях", pm=27.24, k=1.0, base=False),
+                            dict(name="Протяжка на блоке", pm=90.67, k=1.0, base=False),
+                            dict(name="Сведение в кроссовере через верхние блоки", pm=76.24, k=1.0, base=False),
+                            dict(name="Жим Арнольда", pm=19.58, k=2.0, base=False),
+                            dict(name="Отведение в кроссовере на среднюю дельту", pm=26.67, k=1.0, base=False),
+                            dict(name="Жим в смите под углом", pm=58.06, k=1.0, base=False),
+                            dict(name="Присед со штангой на груди", pm=112.50, k=1.0, base=True),
+                            dict(name="Жим штанги стоя", pm=58.06, k=1.0, base=True),
+                            dict(name="Жим штанги с груди сидя на опорной скамье", pm=65.45, k=1.0, base=True),
+                            dict(name="Французский жим гантелей лежа", pm=19.58, k=2.0, base=False),
+                            dict(name="Жим книзу одной рукой в блочном тренажере обратным хватом", pm=36.00, k=2.0,
+                                 base=False),
+                            dict(name="Разведение ног на тренажере", pm=192.71, k=1.0, base=False),
+                            dict(name="Жим с цепями", pm=112.50, k=1.0, base=True)]
 
     def add(self, name: str, value: float, repeat: int):
         old = self.base.get(name, {'max': 0.0, 'repeat': 1})
@@ -28,13 +187,25 @@ class Exercises:
         for name, data in self.base.items():
             m = data['max']
             k = data['repeat']
-            print(name, m, 'x', k, '%1.1f' % (m * (36 / (37 - k))))
+            # print(name, m, 'x', k, '%1.1f' % (m * (36 / (37 - k))))
+            print(f'dict(name="{name}", pm={(m * (36 / (37 - k))):.2f}, k=1.0, base=True),')
+
+        print(self.ex_base_old)
 
     def get_1PM(self, name: str) -> float:
         ex = self.base.get(name, {'max': 0.0, 'repeat': 1})
         m = ex['max']
         k = ex['repeat']
         return (m * (36 / (37 - k)))
+
+    def _get_1PM(self, name: str) -> float:
+        pass
+
+    def _convert_base(self):
+        for item in self.ex_base_old:
+            # print(item)
+
+            print(f'"{item["name"]}" : {{"pm": {item["pm"]}, "k": {item["k"]}, "base": {item["base"]} }},')
 
 
 class Statistic:
@@ -53,6 +224,10 @@ class Statistic:
                     Statistic.exercises.add(ex.name, item.weight, item.repeats)
 
         Statistic.exercises.output()
+
+    @staticmethod
+    def get_1pm(ex_name):
+        return Statistic.exercises.get_1PM(ex_name)
 
 
 class CreateTable:
@@ -107,126 +282,110 @@ class CreateTable:
                 else:
                     print(file=fd)
 
+
 class ExportXLS:
-    def __init__(self, base:Base):
-        self.base=base
+    def __init__(self, base: Base):
+        self.base = base
 
     def proceed_to_xls(self, fname):
         wb = Workbook()
         ws = wb.active
 
-        c_row=0
+        c_row = 1
 
         for workout in self.base.days:
-            c_row=c_row+1
-            ws.cell(c_row, 1).value = workout.date
-            ws.cell(c_row, 2).value = workout.name
+            day_row = c_row
+            c_row = c_row + 1
+
+            ws.cell(day_row, 1).value = workout.date
+            ws.cell(day_row, 2).value = workout.name
+            ws.cell(day_row, 1).font = Font(bold=True)
+            ws.cell(day_row, 2).font = Font(bold=True)
 
             for ex in workout.excercises:
                 c_row = c_row + 1
                 use_third_line = False
 
                 ws.cell(c_row, 3).value = ex.name
+                ws.cell(c_row, 3).alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
 
                 i = 4
                 for set in ex.sets:
                     ws.cell(c_row, i).value = set.weight
-                    ws.cell(c_row+1, i).value = set.repeats
+                    ws.cell(c_row + 2, i).value = set.repeats
+                    if Statistic.exercises.get_1PM(ex.name) > 0.01:
+                        ws.cell(c_row + 1, i).value = set.weight / Statistic.get_1pm(ex.name)
+                        ws.cell(c_row + 1, i).number_format = '0.0%'
 
-                    t=''
+                    t = ''
                     if set.anydata:
-                        t=t+set.anydata
+                        t = t + set.anydata
                         use_third_line = True
                     if set.comment:
                         t = t + set.comment
                         use_third_line = True
 
-                    ws.cell(c_row + 2, i).value = t
+                    ws.cell(c_row + 3, i).value = t
 
                     i = i + 1
 
                 if ex.sets:
 
-                    ws.merge_cells(f'C{c_row}:C{c_row+1}')
+                    # ws.merge_cells(f'C{c_row}:C{c_row+2}')
 
-                    ws.cell(c_row, 21).value = 'V'
-                    ws.cell(c_row+1, 21).value = f'=SUMPRODUCT(D{c_row}:T{c_row},D{c_row+1}:T{c_row+1})'
+                    ws.cell(c_row, 21).value = f'=SUMPRODUCT(D{c_row}:T{c_row},D{c_row+2}:T{c_row+2})'
+                    ws.cell(c_row, 22).value = f'=SUM(D{c_row+2}:T{c_row+2})'
+                    ws.cell(c_row, 23).value = f'=X{c_row}/Y{c_row}'
+                    ws.cell(c_row, 24).value = f'=U{c_row}/V{c_row}'
+                    ws.cell(c_row, 25).value = Statistic.exercises.get_1PM(ex.name)
+                    ws.cell(c_row, 26).value = f'=W{c_row}*V{c_row}'
+                    ws.cell(c_row, 23).number_format = '0.0%'
+                    ws.cell(c_row, 24).number_format = '0.0'
+                    ws.cell(c_row, 25).number_format = '0.0'
+                    ws.cell(c_row, 26).number_format = '0.0'
 
-                    ws.cell(c_row, 22).value = 'КПШ'
-                    ws.cell(c_row+1, 22).value = f'=SUM(D{c_row+1}:T{c_row+1})'
-
-                    ws.cell(c_row, 23).value = 'Ио'
-                    ws.cell(c_row+1, 23).value = f'=X{c_row+1}/Y{c_row+1}'
-                    ws.cell(c_row + 1, 23).number_format = '0.0%'
-
-                    ws.cell(c_row, 24).value = 'ср вес'
-                    ws.cell(c_row+1, 24).value = f'=U{c_row+1}/V{c_row+1}'
-                    ws.cell(c_row + 1, 24).number_format = '0.0'
-
-                    ws.cell(c_row, 25).value = '1ПМ'
-                    ws.cell(c_row+1, 25).value = Statistic.exercises.get_1PM(ex.name)
-                    ws.cell(c_row+1, 25).number_format = '0.0'
-
-                    ws.cell(c_row, 26).value = 'КО'
-                    ws.cell(c_row+1, 26).value = f'=W{c_row+1}*V{c_row+1}'
-                    ws.cell(c_row+1, 26).number_format = '0.0'
-
-                    c_row = c_row + 1
+                    c_row = c_row + 2
 
                     if use_third_line:
                         c_row = c_row + 1
 
-        self.format_exersises_sheet(ws,c_row)
+            self.bold_center(ws.cell(day_row, 21), 'V')
+            self.bold_center(ws.cell(day_row, 22), 'КПШ')
+            self.bold_center(ws.cell(day_row, 23), 'Ио')
+            self.bold_center(ws.cell(day_row, 24), 'ср вес')
+            self.bold_center(ws.cell(day_row, 25), '1ПМ')
+            self.bold_center(ws.cell(day_row, 26), 'КО')
+            self.bold_center(ws.cell(day_row + 1, 21), f'=SUM(U{day_row+2}:U{c_row})')
+            self.bold_center(ws.cell(day_row + 1, 22), f'=SUM(V{day_row+2}:V{c_row})')
+            self.bold_center(ws.cell(day_row + 1, 26), f'=SUM(Z{day_row+2}:Z{c_row})')
+            ws.cell(day_row + 1, 26).number_format = '0.0'
+
+            c_row = c_row + 2
+
+        self.format_exersises_sheet(ws, c_row)
         wb.save(fname)
+
+    def bold_center(self, cell, value):
+        cell.value = value
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='top')
 
     def format_exersises_sheet(self, ws, last_row):
 
-        align_center = Alignment(horizontal='center',
-                                 vertical='top',
-                                 text_rotation=0,
-                                 wrap_text=False,
-                                 shrink_to_fit=False,
-                                 indent=0)
+        align_left_wrap = Alignment(horizontal='left', vertical='top', wrap_text=True)
 
-        align_left_wrap = Alignment(horizontal='left',
-                                 vertical='top',
-                                 text_rotation=0,
-                                 wrap_text=True,
-                                 shrink_to_fit=False,
-                                 indent=0)
+        # for col in ws.iter_cols(min_col=21, max_col=26, max_row=last_row):
+        #     for cell in col:
+        #         cell.alignment=align_center
 
-
-        for col in ws.iter_cols(min_col=21, max_col=26, max_row=last_row):
-            for cell in col:
-                cell.alignment=align_center
-
-        for cell in ws['C']:
-            cell.alignment = align_left_wrap
+        # for cell in ws['C']:
+        #     cell.alignment = align_left_wrap
 
         ws.column_dimensions['A'].width = 12
         ws.column_dimensions['B'].width = 1
         ws.column_dimensions['C'].width = 30
 
+
 if __name__ == "__main__":
-
-
-    wb1 = Workbook()
-
-    # grab the active worksheet
-    ws1 = wb1.active
-
-    # Data can be assigned directly to cells
-    # ws['A1'] = 42
-
-    # Rows can also be appended
-    ws1.append([1, 2, 3])
-
-    ws1['D1']='=SUM(A1:C1)'
-
-    # Python types will automatically be converted
-    # import datetime
-    #
-    # ws['A2'] = datetime.datetime.now()
-
-    # Save the file
-    wb1.save("sample.xlsx")
+    ex = Exercises()
+    ex._convert_base()
