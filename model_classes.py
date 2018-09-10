@@ -201,6 +201,13 @@ class Exercises:
     def _get_1PM(self, name: str) -> float:
         pass
 
+    def is_base(self, ex_name:str)->bool:
+        try:
+            return self.ex_base[ex_name]['base']
+        except KeyError:
+            return False
+
+
     def _convert_base(self):
         for item in self.ex_base_old:
             # print(item)
@@ -228,6 +235,10 @@ class Statistic:
     @staticmethod
     def get_1pm(ex_name):
         return Statistic.exercises.get_1PM(ex_name)
+
+    @staticmethod
+    def is_base(ex_name:str)->bool:
+        return Statistic.exercises.is_base(ex_name)
 
 
 class CreateTable:
@@ -304,50 +315,10 @@ class ExportXLS:
 
             for ex in workout.excercises:
                 c_row = c_row + 1
-                use_third_line = False
-
-                ws.cell(c_row, 3).value = ex.name
-                ws.cell(c_row, 3).alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
-
-                i = 4
-                for set in ex.sets:
-                    ws.cell(c_row, i).value = set.weight
-                    ws.cell(c_row + 2, i).value = set.repeats
-                    if Statistic.exercises.get_1PM(ex.name) > 0.01:
-                        ws.cell(c_row + 1, i).value = set.weight / Statistic.get_1pm(ex.name)
-                        ws.cell(c_row + 1, i).number_format = '0.0%'
-
-                    t = ''
-                    if set.anydata:
-                        t = t + set.anydata
-                        use_third_line = True
-                    if set.comment:
-                        t = t + set.comment
-                        use_third_line = True
-
-                    ws.cell(c_row + 3, i).value = t
-
-                    i = i + 1
-
-                if ex.sets:
-
-                    # ws.merge_cells(f'C{c_row}:C{c_row+2}')
-
-                    ws.cell(c_row, 21).value = f'=SUMPRODUCT(D{c_row}:T{c_row},D{c_row+2}:T{c_row+2})'
-                    ws.cell(c_row, 22).value = f'=SUM(D{c_row+2}:T{c_row+2})'
-                    ws.cell(c_row, 23).value = f'=X{c_row}/Y{c_row}'
-                    ws.cell(c_row, 24).value = f'=U{c_row}/V{c_row}'
-                    ws.cell(c_row, 25).value = Statistic.exercises.get_1PM(ex.name)
-                    ws.cell(c_row, 26).value = f'=W{c_row}*V{c_row}'
-                    ws.cell(c_row, 23).number_format = '0.0%'
-                    ws.cell(c_row, 24).number_format = '0.0'
-                    ws.cell(c_row, 25).number_format = '0.0'
-                    ws.cell(c_row, 26).number_format = '0.0'
-
-                    c_row = c_row + 2
-
-                    if use_third_line:
-                        c_row = c_row + 1
+                if Statistic.is_base(ex.name):
+                    c_row = self.full_exercise(ws,ex,c_row)
+                else:
+                    c_row = self.short_exercise(ws,ex,c_row)
 
             self.bold_center(ws.cell(day_row, 21), 'V')
             self.bold_center(ws.cell(day_row, 22), 'КПШ')
@@ -364,6 +335,63 @@ class ExportXLS:
 
         self.format_exersises_sheet(ws, c_row)
         wb.save(fname)
+
+    def full_exercise(self, ws, ex, row:int)-> int:
+        use_third_line = False
+
+        ws.cell(row, 3).value = ex.name
+        ws.cell(row, 3).alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+        i = 4
+        for set in ex.sets:
+            ws.cell(row, i).value = set.weight
+            ws.cell(row + 2, i).value = set.repeats
+            if Statistic.exercises.get_1PM(ex.name) > 0.01:
+                ws.cell(row + 1, i).value = set.weight / Statistic.get_1pm(ex.name)
+                ws.cell(row + 1, i).number_format = '0.0%'
+
+            t = ''
+            if set.anydata:
+                t = t + set.anydata
+                use_third_line = True
+            if set.comment:
+                t = t + set.comment
+                use_third_line = True
+
+            ws.cell(row + 3, i).value = t
+
+            i = i + 1
+
+        if ex.sets:
+
+            # ws.merge_cells(f'C{c_row}:C{c_row+2}')
+
+            ws.cell(row, 21).value = f'=SUMPRODUCT((D{row}:T{row}>Y{row}/2.01)*1,D{row}:T{row},D{row+2}:T{row+2})'        #=СУММПРОИЗВ((D400:T400>Y400/2)*1;D402:T402;D400:T400)
+            ws.cell(row, 22).value = f'=SUM(D{row+2}:T{row+2})'
+            ws.cell(row, 23).value = f'=X{row}/Y{row}'
+            ws.cell(row, 24).value = f'=U{row}/V{row}'
+            ws.cell(row, 25).value = Statistic.get_1pm(ex.name)
+            ws.cell(row, 26).value = f'=W{row}*V{row}'
+            ws.cell(row, 23).number_format = '0.0%'
+            ws.cell(row, 24).number_format = '0.0'
+            ws.cell(row, 25).number_format = '0.0'
+            ws.cell(row, 26).number_format = '0.0'
+
+            row = row + 2
+
+            if use_third_line:
+                row = row + 1
+        return row
+
+    def short_exercise(self, ws, ex, row:int)-> int:
+        ws.cell(row, 3).value = ex.name
+        ws.cell(row, 3).alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+        i = 4
+        for set in ex.sets:
+            ws.cell(row, i).value = set.repeats
+            i = i + 1
+        return row
 
     def bold_center(self, cell, value):
         cell.value = value
